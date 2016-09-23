@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.set(15, forKey: "default")
             defaults.set(10, forKey: "min")
             defaults.set(20, forKey: "max")
+            defaults.synchronize()
         }
 
         return true

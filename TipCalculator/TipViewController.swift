@@ -96,13 +96,9 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         // billingAmountTextField
         self.view.addSubview(billingAmountTextField)
         
-        self.billingAmountTextField.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(navBottomHeight)
-            make.left.equalTo(self.view).offset(25)
-            make.right.equalTo(self.view).offset(-25)
-            make.height.equalTo(250)
-        }
-        
+        let screenWidth = UIScreen.main.bounds.width
+        self.billingAmountTextField.frame = CGRect(x: 25, y: navBottomHeight, width: screenWidth - 50, height: 250)
+        self.billingAmountTextField.adjustsFontSizeToFitWidth = true
         self.billingAmountTextField.textAlignment = NSTextAlignment.right
         self.billingAmountTextField.textColor = UIColor.black
         self.billingAmountTextField.tintColor = UIColor.gray
@@ -157,7 +153,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         let newString = textField.text! + string
         let billAmount = Double(newString) ?? 0
         
-        if (newString.characters.count >= 6) {
+        if (newString.characters.count >= 12) {
             return false
         }
         

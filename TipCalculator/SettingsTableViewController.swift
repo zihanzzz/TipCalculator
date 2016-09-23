@@ -149,12 +149,15 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
             switch textField.tag {
             case 0:
                 defaults.set(newPercentage, forKey: "default")
+                defaults.synchronize()
                 break
             case 1:
                 defaults.set(newPercentage, forKey: "min")
+                defaults.synchronize()
                 break
             case 2:
                 defaults.set(newPercentage, forKey: "max")
+                defaults.synchronize()
                 break
             default:
                 break
