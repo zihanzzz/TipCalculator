@@ -25,6 +25,8 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     
     let calculationView = UIView()
     
+    let transparentView = UIView()
+    
     let plusSignLabel = UILabel()
     
     let equalSignLabel = UILabel()
@@ -32,12 +34,14 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     let tipAmountLabel = UILabel()
     
     let totalAmountLabel = UILabel()
-   
+    
     var keyboardTopY:CGFloat = 0
     
     var navBottomHeight: CGFloat = 0
     
     var calculationState = false
+    
+    var startingPercentage:Int = 0
     
     override func viewDidAppear(_ animated: Bool) {
         billingAmountTextField.becomeFirstResponder()
@@ -45,15 +49,21 @@ class TipViewController: UIViewController, UITextFieldDelegate {
             setUpCalculation()
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.addSubview(self.calculationView)
+        self.view.addSubview(self.transparentView)
         self.calculationView.addSubview(self.plusSignLabel)
         self.calculationView.addSubview(self.equalSignLabel)
         self.calculationView.addSubview(self.tipAmountLabel)
         self.calculationView.addSubview(self.totalAmountLabel)
+        
+        // gesture recognizer
+        let gestureRecognizer = UIPanGestureRecognizer()
+        self.transparentView.addGestureRecognizer(gestureRecognizer)
+        gestureRecognizer.addTarget(self, action: #selector(amountSwiped))
         
         // Keyboard observer
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:.UIKeyboardWillShow, object: nil)
@@ -68,7 +78,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         
         rightBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: UIControlState.normal)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
-
+        
         self.view.backgroundColor = UIColor.white
         
         navBottomHeight = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.frame.height
@@ -161,12 +171,12 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     // MARK: - UI Manipulations
     func restoreCalculation() {
         calculationState = false
-
+        
         var percentageFrame = self.billingAndPercentageView.frame
         percentageFrame.size.height = 300
         self.billingAndPercentageView.frame = percentageFrame
         self.billingAndPercentageView.backgroundColor = UIColor.white
-            
+        
         var textFrame = self.billingAmountTextField.frame
         let newHeight_t = CGFloat(250)
         textFrame.size.height = newHeight_t
@@ -174,6 +184,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         
         self.tipPercentageLabel.removeFromSuperview()
         self.calculationView.isHidden = true
+        self.transparentView.isHidden = true
     }
     
     func setUpCalculation() {
@@ -188,12 +199,12 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         percentageFrame.size.height = newHeight_p
         self.billingAndPercentageView.frame = percentageFrame
         self.billingAndPercentageView.backgroundColor = TipConstants.blueColor
-            
+        
         var textFrame = self.billingAmountTextField.frame
         let newHeight_t = CGFloat(newHeight_p * 0.5)
         textFrame.size.height = newHeight_t
         self.billingAmountTextField.frame = textFrame
-
+        
         let screenWidth = UIScreen.main.bounds.width
         self.billingAndPercentageView.addSubview(self.tipPercentageLabel)
         self.tipPercentageLabel.frame = CGRect(x: screenWidth * 0.7, y: newHeight_t, width: screenWidth * 0.3, height: newHeight_t)
@@ -207,6 +218,10 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.calculationView.isHidden = false
         self.calculationView.frame = CGRect(x: 0, y: self.navBottomHeight + newHeight_p, width: screenWidth, height: (self.keyboardTopY - self.navBottomHeight) * 0.4)
         self.calculationView.backgroundColor = UIColor.yellow
+        
+        self.transparentView.isHidden = false
+        self.transparentView.frame = CGRect(x: 0, y: self.navBottomHeight + newHeight_p, width: screenWidth, height: (self.keyboardTopY - self.navBottomHeight) * 0.4)
+        self.transparentView.backgroundColor = UIColor.clear
         
         
         self.plusSignLabel.isHidden = false
@@ -234,22 +249,60 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.totalAmountLabel.textAlignment = .right
         self.totalAmountLabel.textColor = UIColor.gray
         self.totalAmountLabel.font = UIFont.init(name: TipConstants.textFontName, size: 40)
-
+        
     }
-
+    
+    func amountSwiped(gestureRecognizer: UIPanGestureRecognizer) {
+        let translation = gestureRecognizer.translation(in: self.transparentView)
+        
+        let defaults = UserDefaults.standard
+        //        let defaultValue = defaults.integer(forKey: "default")
+        let minValue = defaults.integer(forKey: "min")
+        let maxValue = defaults.integer(forKey: "max")
+        
+        switch gestureRecognizer.state {
+        case UIGestureRecognizerState.began:
+            self.startingPercentage = Int(self.tipPercentage * 100)
+            break
+        case UIGestureRecognizerState.changed:
+            var newP = self.startingPercentage + Int(translation.x / 20)
+            
+            if (newP > maxValue) {
+                newP = maxValue
+            } else if (newP < minValue) {
+                newP = minValue
+            }
+            
+            updateCalculation(percentage: newP)
+            
+            break
+        default:
+            break
+        }
+    }
+    
+    func updateCalculation(percentage: Int) {
+        self.tipPercentageLabel.text = String(format: "%d", percentage) + "%"
+        let bill = Double(self.billingAmountTextField.text!) ?? 0
+        let tip = bill * Double(percentage) / 100
+        let total = bill + tip
+        refreshAmountLabels(tipAmount: tip, totalAmount: total)
+        self.tipPercentage = Double(percentage) / 100
+    }
+    
     func refreshAmountLabels(tipAmount:Double, totalAmount:Double) {
         self.tipAmountLabel.text = String(format: "$%.2f", tipAmount)
         self.totalAmountLabel.text = String(format: "$%.2f", totalAmount)
     }
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
