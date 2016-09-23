@@ -32,4 +32,11 @@ class TipConstants: NSObject {
     
     static let nagivationTextDict: [String: AnyObject] = [NSForegroundColorAttributeName: UIColor.yellow, NSFontAttributeName: TipConstants.navigationTextFont!]
 
+    static func getCurrencyString(string: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        let nsnumber = NSNumber(value: Double(string) ?? 0)
+        return formatter.string(from: nsnumber)!
+    }
 }

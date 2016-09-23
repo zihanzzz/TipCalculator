@@ -107,7 +107,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.billingAmountTextField.textColor = UIColor.black
         self.billingAmountTextField.tintColor = UIColor.gray
         self.billingAmountTextField.font = UIFont.init(name: TipConstants.textFontName, size: 60)
-        self.billingAmountTextField.placeholder = "$0.00"
+        self.billingAmountTextField.placeholder = TipConstants.getCurrencyString(string: "0.00")
         self.billingAmountTextField.keyboardType = UIKeyboardType.decimalPad
         self.billingAmountTextField.keyboardAppearance = UIKeyboardAppearance.dark
         self.billingAmountTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -243,12 +243,14 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.tipAmountLabel.textAlignment = .right
         self.tipAmountLabel.textColor = UIColor.gray
         self.tipAmountLabel.font = UIFont.init(name: TipConstants.textFontName, size: 40)
+        self.tipAmountLabel.adjustsFontSizeToFitWidth = true
         
         self.totalAmountLabel.isHidden = false
         self.totalAmountLabel.frame = CGRect(x: screenWidth * 0.2, y: self.calculationView.frame.height * 0.5, width: screenWidth * 0.7, height: self.calculationView.frame.height * 0.5)
         self.totalAmountLabel.textAlignment = .right
         self.totalAmountLabel.textColor = UIColor.gray
         self.totalAmountLabel.font = UIFont.init(name: TipConstants.textFontName, size: 40)
+        self.totalAmountLabel.adjustsFontSizeToFitWidth = true
         
     }
     
@@ -291,8 +293,8 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     }
     
     func refreshAmountLabels(tipAmount:Double, totalAmount:Double) {
-        self.tipAmountLabel.text = String(format: "$%.2f", tipAmount)
-        self.totalAmountLabel.text = String(format: "$%.2f", totalAmount)
+        self.tipAmountLabel.text = TipConstants.getCurrencyString(string: String(tipAmount))
+        self.totalAmountLabel.text = TipConstants.getCurrencyString(string: String(totalAmount))
     }
     
     /*
