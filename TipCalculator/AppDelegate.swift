@@ -16,6 +16,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let tipVC = TipViewController()
+        let navVC = UINavigationController(rootViewController: tipVC)
+        window?.rootViewController = navVC
+        
+        // user defaults
+        let defaults = UserDefaults.standard
+        let didLoadBefore = defaults.bool(forKey: "loaded")
+        
+        if (didLoadBefore != true) {
+            defaults.set(true, forKey: "loaded")
+            defaults.set(15, forKey: "default")
+            defaults.set(10, forKey: "min")
+            defaults.set(20, forKey: "max")
+        }
+
         return true
     }
 
