@@ -17,6 +17,8 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     
     var tipPercentageLabel = UILabel()
     
+    var billAmount:Double = 0
+    
     var tipPercentage:Double = 0
     
     var tipAmount:Double = 0
@@ -68,6 +70,9 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         // Keyboard observer
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:.UIKeyboardWillShow, object: nil)
         
+        // Exit observer
+        NotificationCenter.default.addObserver(self, selector: #selector(appMovedToBackground), name: Notification.Name.UIApplicationWillResignActive, object: nil)
+        
         // Do any additional setup after loading the view.
         navigationController?.navigationBar.barTintColor = TipConstants.greenColor
         
@@ -108,6 +113,26 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.billingAmountTextField.keyboardAppearance = UIKeyboardAppearance.dark
         self.billingAmountTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         self.billingAmountTextField.delegate = self
+        
+        // date
+        let defaults = UserDefaults.standard
+        self.keyboardTopY = CGFloat(defaults.float(forKey: "keyboardHeight"))
+        if let oldDate = defaults.object(forKey: "lastDate") {
+            let currentDate = Date()
+            let elapsedTime = currentDate.timeIntervalSince(oldDate as! Date)
+            if (elapsedTime <= 6000) {
+                let lastAmount = defaults.double(forKey: "lastAmount")
+                if (lastAmount > 0) {
+                    setUpCalculation()
+                    self.billAmount = lastAmount
+                    self.tipPercentage = defaults.double(forKey: "lastPercentage")
+                    self.tipAmount = self.billAmount * self.tipPercentage
+                    self.totalAmount = self.billAmount + self.tipAmount
+                    refreshAmountLabels(tipAmount: self.tipAmount, totalAmount: self.totalAmount)
+                    self.billingAmountTextField.text = String(format: "%.2f", lastAmount)
+                }
+            }
+        }
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -122,6 +147,9 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     func keyboardWillShow(notification: NSNotification) {
         let frame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         keyboardTopY = frame.origin.y
+        let defaults = UserDefaults.standard
+        defaults.set(self.keyboardTopY, forKey: "keyboardHeight")
+        defaults.synchronize()
     }
     
     override func didReceiveMemoryWarning() {
@@ -141,9 +169,9 @@ class TipViewController: UIViewController, UITextFieldDelegate {
             setUpCalculation()
         }
         
-        let bill = Double(currentText) ?? 0
-        self.tipAmount = bill * self.tipPercentage
-        self.totalAmount = bill + self.tipAmount
+        self.billAmount = Double(currentText) ?? 0
+        self.tipAmount = self.billAmount * self.tipPercentage
+        self.totalAmount = self.billAmount + self.tipAmount
         
         refreshAmountLabels(tipAmount: self.tipAmount, totalAmount: self.totalAmount)
     }
@@ -151,15 +179,16 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         let newString = textField.text! + string
-        let billAmount = Double(newString) ?? 0
+        let newBillAmount = Double(newString) ?? 0
         
         if (newString.characters.count >= 12) {
             return false
         }
         
-        if (billAmount == 0) {
+        if (newBillAmount == 0) {
             return false
         } else {
+            self.billAmount = newBillAmount
             return true
         }
     }
@@ -247,7 +276,6 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.totalAmountLabel.textColor = UIColor.gray
         self.totalAmountLabel.font = UIFont.init(name: TipConstants.textFontName, size: 40)
         self.totalAmountLabel.adjustsFontSizeToFitWidth = true
-        
     }
     
     func amountSwiped(gestureRecognizer: UIPanGestureRecognizer) {
@@ -291,6 +319,17 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     func refreshAmountLabels(tipAmount:Double, totalAmount:Double) {
         self.tipAmountLabel.text = TipConstants.getCurrencyString(string: String(tipAmount))
         self.totalAmountLabel.text = TipConstants.getCurrencyString(string: String(totalAmount))
+    }
+    
+    func appMovedToBackground() {
+        if (self.billAmount > 0) {
+            let defaults = UserDefaults.standard
+            defaults.set(self.billAmount, forKey: "lastAmount")
+            defaults.set(self.tipPercentage, forKey: "lastPercentage")
+            let currentDate = Date()
+            defaults.set(currentDate, forKey: "lastDate")
+            defaults.synchronize()
+        }
     }
     
     /*
