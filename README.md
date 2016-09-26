@@ -4,7 +4,7 @@ iTipsCalculator is a tip calculator application for iOS.
 
 Submitted by: James Zhou
 
-Time spent: 5 hours spent in total
+Time spent: 5.5 hours spent in total
 
 ## User Stories
 
@@ -15,7 +15,7 @@ The following **required** functionality is complete:
 
 The following **optional** features are implemented:
 * [ ] UI animations
-* [ ] Remembering the bill amount across app restarts (if <10mins)
+* [x] Remembering the bill amount across app restarts (if <10mins)
 * [x] Using locale-specific currency and currency thousands separators.
 * [x] Making sure the keyboard is always visible and the bill amount is always the first responder. This way the user doesn't have to tap anywhere to use this app. Just launch the app and start typing.
 
@@ -30,13 +30,15 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/7ADimoA.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-One of the most challenging part was to manipulate the UI components on the main ViewController. SnapKit was really helpful, but I had to think very carefully of where each UI components land on. I know that in an iOS team, working with Storyboards is very painful because Storyboard files are extremely hard to merge and error-prone. I programmatically added the UI components, which I found a lot easier to deal with.
+One of the most challenging part was to manipulate the UI components on the main ViewController. SnapKit was really helpful, but I had to think very carefully of where each UI components land on the screen. I know that in an iOS team, working with Storyboards is very painful because Storyboard files are extremely hard to merge and error-prone. I programmatically added the UI components, which I found a lot easier to deal with.
+
+Another thing that I needed to think carefully before implementing is the life cycle of the view controller. Instance variables need to be intialized properly when the view controller is loaded. Also, UI components need to be taken into consideration as well.
 
 ## License
 
