@@ -498,7 +498,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DC17C8C39FE49D9F2791E594 /* Pods-TipCalculator.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EEV6AZHDW2;
 				INFOPLIST_FILE = TipCalculator/Info.plist;
@@ -515,7 +515,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C7714C642947A7BF034A1F31 /* Pods-TipCalculator.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EEV6AZHDW2;
 				INFOPLIST_FILE = TipCalculator/Info.plist;

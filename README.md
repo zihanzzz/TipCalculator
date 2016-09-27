@@ -4,7 +4,7 @@ iTipsCalculator is a tip calculator application for iOS.
 
 Submitted by: James Zhou
 
-Time spent: 5.5 hours spent in total
+Time spent: 6 hours spent in total
 
 ## User Stories
 
@@ -25,12 +25,14 @@ The following **additional** features are implemented:
 - [x] Swipe left and right to change tip percentage between minimum percentage and maximum percentage
 - [x] Configure default, minimum and maximum percentage in the settings page
 - [x] Prevent user from typing in invalid numbers (like "32.." or "1.2.")
+- [x] Double tap total amount to round to the nearest integer
+- [x] Disable double tap feature in the Settings page
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/7ADimoA.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/BI7viNy.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
