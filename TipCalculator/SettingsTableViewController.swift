@@ -26,7 +26,13 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
         let leftBarButtonItem = UIBarButtonItem(title: "back", style: .plain, target: self, action: #selector(leftBarButtonItemClicked))
         leftBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: .normal)
         
+        let rightBarButtonItem = UIBarButtonItem(title: "v1.2", style: .plain, target: self, action: nil)
+        
+        rightBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: .normal)
+        
         self.navigationItem.leftBarButtonItem = leftBarButtonItem
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         self.view.backgroundColor = UIColor.white
         
@@ -52,13 +58,15 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         if (section == 0) {
             return 3
+        } else if (section == 1) {
+            return 1
         }
         return 0
     }
@@ -127,6 +135,41 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
             default:
                 break
             }
+        } else if (indexPath.section == 1) {
+            
+            let screenWidth = UIScreen.main.bounds.width
+            
+            let enableLabel = UILabel()
+            cell.contentView.addSubview(enableLabel)
+            enableLabel.snp.makeConstraints({ (make) -> Void in
+                make.top.equalToSuperview()
+                make.height.equalToSuperview()
+                make.left.equalToSuperview()
+                make.width.equalTo(screenWidth * 0.5)
+            })
+            
+            enableLabel.font = UIFont.init(name: TipConstants.textFontName, size: 20)
+            enableLabel.textAlignment = .center
+            enableLabel.backgroundColor = UIColor.lightGray
+            enableLabel.text = "Enabled"
+            
+            let enableSwitch = UISwitch()
+            enableSwitch.addTarget(self, action: #selector(switchChanged), for: UIControlEvents.valueChanged)
+            cell.contentView.addSubview(enableSwitch)
+            enableSwitch.snp.makeConstraints({ (make) -> Void in
+                make.top.equalToSuperview().offset(8)
+                make.bottom.equalToSuperview()
+                make.width.equalTo(screenWidth * 0.2)
+                make.right.equalToSuperview()
+            })
+            
+            let defaults = UserDefaults.standard
+            if (defaults.bool(forKey: "doubleTap")) {
+                enableSwitch.setOn(true, animated: true)
+            } else {
+                enableSwitch.setOn(false, animated: true)
+            }
+            
         }
 
         
@@ -137,8 +180,21 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (section == 0) {
             return "Tip Percentage"
+        } else if (section == 1) {
+            return "Double Tap to Round"
         }
         return nil
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 15
+    }
+    
+    // MARK: - UISwitch Methods
+    func switchChanged(s: UISwitch) {
+        let defaults = UserDefaults.standard
+        defaults.set(s.isOn, forKey: "doubleTap")
+        defaults.synchronize()
     }
 
     // MARK: - Text Methods

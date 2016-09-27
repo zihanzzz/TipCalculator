@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 import SnapKit
 
 class TipViewController: UIViewController, UITextFieldDelegate {
@@ -62,10 +63,16 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.calculationView.addSubview(self.tipAmountLabel)
         self.calculationView.addSubview(self.totalAmountLabel)
         
-        // gesture recognizer
-        let gestureRecognizer = UIPanGestureRecognizer()
-        self.transparentView.addGestureRecognizer(gestureRecognizer)
-        gestureRecognizer.addTarget(self, action: #selector(amountSwiped))
+        // pan gesture recognizer
+        let panGestureRecognizer = UIPanGestureRecognizer()
+        self.transparentView.addGestureRecognizer(panGestureRecognizer)
+        panGestureRecognizer.addTarget(self, action: #selector(amountSwiped))
+        
+        // tap gesture recognizer
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 2
+        self.transparentView.addGestureRecognizer(tapGestureRecognizer)
+        tapGestureRecognizer.addTarget(self, action: #selector(doubleTapped))
         
         // Keyboard observer
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:.UIKeyboardWillShow, object: nil)
@@ -172,6 +179,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.billAmount = Double(currentText) ?? 0
         self.tipAmount = self.billAmount * self.tipPercentage
         self.totalAmount = self.billAmount + self.tipAmount
+        self.tipPercentageLabel.text = String(format: "%.0f", self.tipPercentage * 100) + "%"
         
         refreshAmountLabels(tipAmount: self.tipAmount, totalAmount: self.totalAmount)
     }
@@ -238,6 +246,7 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.tipPercentageLabel.font = UIFont.init(name: TipConstants.textFontName, size: 35)
         self.tipPercentageLabel.textAlignment = .center
         self.tipPercentageLabel.textColor = UIColor.gray
+        self.tipPercentageLabel.adjustsFontSizeToFitWidth = true
         
         
         self.calculationView.isHidden = false
@@ -278,6 +287,20 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.totalAmountLabel.adjustsFontSizeToFitWidth = true
     }
     
+    func doubleTapped() {
+        let defaults = UserDefaults.standard
+        if (defaults.bool(forKey: "doubleTap")) {
+            let currentTotal = self.totalAmount
+            let roundedInt = round(currentTotal)
+            let roundedDouble = Double(roundedInt)
+            self.totalAmountLabel.text = TipConstants.getCurrencyString(string: String(roundedDouble))
+            let adjustedTipAmount = roundedDouble - self.billAmount
+            self.tipAmountLabel.text = TipConstants.getCurrencyString(string: String(adjustedTipAmount))
+            let newPercentage = adjustedTipAmount / self.billAmount
+            self.tipPercentageLabel.text = String(format: "%.2f", newPercentage * 100) + "%"
+        }
+    }
+    
     func amountSwiped(gestureRecognizer: UIPanGestureRecognizer) {
         let translation = gestureRecognizer.translation(in: self.transparentView)
         
@@ -309,10 +332,10 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     
     func updateCalculation(percentage: Int) {
         self.tipPercentageLabel.text = String(format: "%d", percentage) + "%"
-        let bill = Double(self.billingAmountTextField.text!) ?? 0
-        let tip = bill * Double(percentage) / 100
-        let total = bill + tip
-        refreshAmountLabels(tipAmount: tip, totalAmount: total)
+        self.billAmount = Double(self.billingAmountTextField.text!) ?? 0
+        self.tipAmount = self.billAmount * Double(percentage) / 100
+        self.totalAmount = self.billAmount + self.tipAmount
+        refreshAmountLabels(tipAmount: self.tipAmount, totalAmount: self.totalAmount)
         self.tipPercentage = Double(percentage) / 100
     }
     
