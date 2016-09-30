@@ -13,11 +13,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let tipVC = TipViewController()
+        let tipVC = TipViewController.init()
         let navVC = UINavigationController(rootViewController: tipVC)
         window?.rootViewController = navVC
         
@@ -33,10 +32,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.set(true, forKey: "doubleTap")
             defaults.synchronize()
         }
-
+        
         return true
     }
 
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        
+        var tipVC: UIViewController
+        
+        switch shortcutItem.type {
+        case "trigger_percentage_10":
+            tipVC = TipViewController.init(percentage: 0.10)
+            break
+        case "trigger_percentage_15":
+            tipVC = TipViewController.init(percentage: 0.15)
+            break
+        case "trigger_percentage_20":
+            tipVC = TipViewController.init(percentage: 0.20)
+            break
+        default:
+            tipVC = TipViewController.init()
+            break
+        }
+        let navVC = UINavigationController(rootViewController: tipVC)
+        window?.rootViewController = navVC
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

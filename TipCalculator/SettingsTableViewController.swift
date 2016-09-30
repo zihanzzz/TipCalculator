@@ -26,7 +26,7 @@ class SettingsTableViewController: UITableViewController, UITextFieldDelegate {
         let leftBarButtonItem = UIBarButtonItem(title: "back", style: .plain, target: self, action: #selector(leftBarButtonItemClicked))
         leftBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: .normal)
         
-        let rightBarButtonItem = UIBarButtonItem(title: "v1.2", style: .plain, target: self, action: nil)
+        let rightBarButtonItem = UIBarButtonItem(title: "v1.3", style: .plain, target: self, action: nil)
         
         rightBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: .normal)
         

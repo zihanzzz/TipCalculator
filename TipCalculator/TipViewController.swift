@@ -40,11 +40,27 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     
     var keyboardTopY:CGFloat = 0
     
-    var navBottomHeight: CGFloat = 0
+    var navBottomHeight:CGFloat = 0
     
     var calculationState = false
     
     var startingPercentage:Int = 0
+    
+    var overridePercentage:Double = 0
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(percentage: Double) {
+        overridePercentage = percentage
+        super.init(nibName: nil, bundle: nil)
+    }
+
     
     override func viewDidAppear(_ animated: Bool) {
         billingAmountTextField.becomeFirstResponder()
@@ -124,6 +140,8 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         // date
         let defaults = UserDefaults.standard
         self.keyboardTopY = CGFloat(defaults.float(forKey: "keyboardHeight"))
+        
+        if (overridePercentage == 0) {
         if let oldDate = defaults.object(forKey: "lastDate") {
             let currentDate = Date()
             let elapsedTime = currentDate.timeIntervalSince(oldDate as! Date)
@@ -140,6 +158,8 @@ class TipViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }
+        }
+        
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -177,10 +197,15 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         }
         
         self.billAmount = Double(currentText) ?? 0
-        self.tipAmount = self.billAmount * self.tipPercentage
-        self.totalAmount = self.billAmount + self.tipAmount
-        self.tipPercentageLabel.text = String(format: "%.0f", self.tipPercentage * 100) + "%"
+        if (overridePercentage > 0) {
+            self.tipAmount = self.billAmount * overridePercentage
+            self.tipPercentageLabel.text = String(format: "%.0f", overridePercentage * 100) + "%"
+        } else {
+            self.tipAmount = self.billAmount * self.tipPercentage
+            self.tipPercentageLabel.text = String(format: "%.0f", self.tipPercentage * 100) + "%"
+        }
         
+        self.totalAmount = self.billAmount + self.tipAmount
         refreshAmountLabels(tipAmount: self.tipAmount, totalAmount: self.totalAmount)
     }
     
@@ -240,14 +265,13 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         
         let screenWidth = UIScreen.main.bounds.width
         self.billingAndPercentageView.addSubview(self.tipPercentageLabel)
-        self.tipPercentageLabel.frame = CGRect(x: screenWidth * 0.7, y: newHeight_t, width: screenWidth * 0.3, height: newHeight_t)
+        self.tipPercentageLabel.frame = CGRect(x: screenWidth * 0.65, y: newHeight_t, width: screenWidth * 0.3, height: newHeight_t)
         
         self.tipPercentageLabel.text = String(format: "%.0f", self.tipPercentage * 100) + "%"
         self.tipPercentageLabel.font = UIFont.init(name: TipConstants.textFontName, size: 35)
         self.tipPercentageLabel.textAlignment = .center
         self.tipPercentageLabel.textColor = UIColor.gray
         self.tipPercentageLabel.adjustsFontSizeToFitWidth = true
-        
         
         self.calculationView.isHidden = false
         self.calculationView.frame = CGRect(x: 0, y: self.navBottomHeight + newHeight_p, width: screenWidth, height: (self.keyboardTopY - self.navBottomHeight) * 0.4)
@@ -256,7 +280,6 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.transparentView.isHidden = false
         self.transparentView.frame = CGRect(x: 0, y: self.navBottomHeight + newHeight_p, width: screenWidth, height: (self.keyboardTopY - self.navBottomHeight) * 0.4)
         self.transparentView.backgroundColor = UIColor.clear
-        
         
         self.plusSignLabel.isHidden = false
         self.plusSignLabel.frame = CGRect(x: screenWidth * 0.0, y: 0, width: screenWidth * 0.20, height: screenWidth * 0.20)
@@ -285,6 +308,9 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.totalAmountLabel.textColor = UIColor.gray
         self.totalAmountLabel.font = UIFont.init(name: TipConstants.textFontName, size: 40)
         self.totalAmountLabel.adjustsFontSizeToFitWidth = true
+        
+        let pInt = Int.init(self.tipPercentage * 100)
+        updateCalculation(percentage: pInt)
     }
     
     func doubleTapped() {
@@ -305,7 +331,6 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         let translation = gestureRecognizer.translation(in: self.transparentView)
         
         let defaults = UserDefaults.standard
-        //        let defaultValue = defaults.integer(forKey: "default")
         let minValue = defaults.integer(forKey: "min")
         let maxValue = defaults.integer(forKey: "max")
         

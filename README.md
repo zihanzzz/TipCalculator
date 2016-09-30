@@ -4,7 +4,7 @@ iTipsCalculator is a tip calculator application for iOS.
 
 Submitted by: James Zhou
 
-Time spent: 6 hours spent in total
+Time spent: 6.5 hours spent in total
 
 ## User Stories
 
@@ -27,12 +27,14 @@ The following **additional** features are implemented:
 - [x] Prevent user from typing in invalid numbers (like "32.." or "1.2.")
 - [x] Double tap total amount to round to the nearest integer
 - [x] Disable double tap feature in the Settings page
+- [x] Support 3D Touch Quick Actions to quickly tip 10%, 15% or 20%
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/BI7viNy.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/zihanzzz/TipCalculator/blob/master/gif/iTipsCalculator.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/zihanzzz/TipCalculator/blob/master/gif/3DTouch.gif' title='3D Touch' width='' alt='3D Touch' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
@@ -40,7 +42,9 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 One of the most challenging part was to manipulate the UI components on the main ViewController. SnapKit was really helpful, but I had to think very carefully of where each UI components land on the screen. I know that in an iOS team, working with Storyboards is very painful because Storyboard files are extremely hard to merge and error-prone. I programmatically added the UI components, which I found a lot easier to deal with.
 
-Another thing that I needed to think carefully before implementing is the life cycle of the view controller. Instance variables need to be intialized properly when the view controller is loaded. Also, UI components need to be taken into consideration as well.
+Another thing that I needed to think carefully before implementing is the life cycle of the view controller. Instance variables need to be initialized properly when the view controller is being loaded.
+
+I also have to use breakpoints to debug. Xcode is very friendly in terms of setting breakpoints to debug, if you compare it to Eclipse. When I was implementing 3D touch Quick Actions, I needed to see which function was invoked and more importantly, the order of the invocation.
 
 ## License
 
