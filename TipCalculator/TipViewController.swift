@@ -103,9 +103,12 @@ class TipViewController: UIViewController, UITextFieldDelegate {
         self.title = TipConstants.titleString
         
         let rightBarButtonItem = UIBarButtonItem(title: TipConstants.settingsString, style: .plain, target: self, action: #selector(rightBarButtonItemClicked))
-        
         rightBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: UIControlState.normal)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        
+        let leftBarButtonItem = UIBarButtonItem(title: TipConstants.clearString, style: .plain, target: self, action: #selector(leftBarButtonItemClicked))
+        leftBarButtonItem.setTitleTextAttributes(TipConstants.nagivationTextDict, for: UIControlState.normal)
+        self.navigationItem.leftBarButtonItem = leftBarButtonItem
         
         self.view.backgroundColor = UIColor.white
         
@@ -164,6 +167,13 @@ class TipViewController: UIViewController, UITextFieldDelegate {
     
     override var prefersStatusBarHidden: Bool {
         return false
+    }
+    
+    func leftBarButtonItemClicked() {
+        UIView.animate(withDuration: 0.1) {
+            self.restoreCalculation()
+            self.billingAmountTextField.text = ""
+        }
     }
     
     func rightBarButtonItemClicked() {

@@ -26,6 +26,8 @@ class TipConstants: NSObject {
     
     static let settingsString = "Settings"
     
+    static let clearString = "Clear"
+    
     static let navigationTextSize = CGFloat(16.0)
     
     static let navigationTextFont = UIFont.init(name: TipConstants.textFontName, size: TipConstants.navigationTextSize)
